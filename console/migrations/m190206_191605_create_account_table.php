@@ -20,10 +20,10 @@ class m190206_191605_create_account_table extends Migration
             'options'  => $this->json(),
         ]);
 
-        $this->insert('{{%account}}', [
+        /*$this->insert('{{%account}}', [
             'settings' => '{"color":"#00FF00", "phone":null}',
             'options'  => '{"height":100, "width":100}'
-        ]);
+        ]);*/
     }
 
     /**
