@@ -3,8 +3,7 @@
 namespace common\models;
 
 use Yii;
-use common\models\SettingsJson;
-use common\validators\JsonValidator;
+use common\components\validators\JsonValidator;
 
 /**
  * This is the model class for table "{{%account}}".
@@ -12,11 +11,21 @@ use common\validators\JsonValidator;
  * @property int $id
  * @property string $email
  * @property string $password
- * @property array $settings
+ * @property SettingsJson $settings
  * @property array $options
  */
 class Account extends TrickyModel
 {
+    /**
+     * @var array
+     */
+    public $options;
+
+    /**
+     * @var SettingsJson
+     */
+    public $settings;
+
     /**
      * {@inheritdoc}
      */
@@ -26,12 +35,21 @@ class Account extends TrickyModel
     }
 
     /**
+     * Account constructor.
+     * @param array $config
+     */
+    public function __construct(array $config = [])
+    {
+        $this->settings = new SettingsJson();
+        parent::__construct($config);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['settings', 'options'], 'safe'],
             [['email', 'password'], 'string', 'max' => 255],
             ['email', 'email'],
             ['settings', JsonValidator::class, 'model' => SettingsJson::class],
@@ -50,5 +68,56 @@ class Account extends TrickyModel
             'settings' => Yii::t('common', 'Settings'),
             'options'  => Yii::t('common', 'Options'),
         ];
+    }
+
+    /**
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert): bool
+    {
+        $this->settings = $this->settings->jsonSerialize();
+        $this->setAttribute('options', $this->options);
+        $this->setAttribute('settings', $this->settings);
+        return parent::beforeSave($insert);
+    }
+
+    public function afterFind()
+    {
+        parent::afterFind();
+
+        $this->options = $this->getAttribute('options');
+
+        $this->settings->color = $this->getAttribute('settings')['color'];
+        $this->settings->phone = $this->getAttribute('settings')['phone'];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSettings()
+    {
+        return $this->getAttribute('settings');
+    }
+
+    public function setSettings()
+    {
+        $this->setAttribute('settings', new SettingsJson());
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOptions()
+    {
+        return $this->getAttribute('options');
+    }
+
+    /**
+     * @param $value
+     */
+    public function setOptions($value)
+    {
+        $this->setAttribute('options', $value);
     }
 }

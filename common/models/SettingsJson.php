@@ -4,10 +4,10 @@ namespace common\models;
 
 
 use yii\base\Model;
-use common\validators\PhoneValidator;
-use common\validators\ColorValidator;
+use common\components\validators\PhoneValidator;
+use common\components\validators\ColorValidator;
 
-class SettingsJson extends Model
+class SettingsJson extends Model implements \JsonSerializable
 {
     /**
      * @var string
@@ -25,6 +25,7 @@ class SettingsJson extends Model
     public function rules()
     {
         return [
+            [['phone', 'color'], 'trim'],
             ['phone', PhoneValidator::class],
             ['color', ColorValidator::class],
         ];

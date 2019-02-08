@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\models\Account;
+use common\models\SettingsJson;
 use Yii;
 use yii\base\InvalidArgumentException;
 use yii\web\BadRequestHttpException;
@@ -77,19 +78,45 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
-    public function actionAccount()
+    /**
+     * Create model Account
+     */
+    public function actionCreateAccount()
     {
         $account = new Account();
 
         $account->email = 'test@test.com';
         $account->password = '12345';
+
         $account->options = ['height' => 100, 'width' => 100];
 
         $account->options['height'] = 200;
+
         $account->settings->color = '#00AAAA';
         $account->settings->phone = '9009333333';
 
         $account->save();
+    }
+
+    /**
+     * @param $id
+     */
+    public function actionUpdateAccount($id)
+    {
+        $account2 = Account::findOne($id);
+
+        print_r($account2->settings->color);
+        print_r($account2->options);
+
+        $account2->settings->color = 'test123';
+
+        $account2->validate();
+
+        print_r($account2->errors);
+
+        $account2->settings->color = '#AAAAAA';
+        $account2->options['height'] = 300;
+        $account2->save();
     }
 
     /**
